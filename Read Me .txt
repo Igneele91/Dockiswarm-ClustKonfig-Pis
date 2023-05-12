@@ -1,0 +1,19 @@
+# Raspberry Pi Cluster Erweiterung
+
+Dieses Repository enthält verschiedene Code-Snippets und Ressourcen, die im Rahmen der Erweiterung des Raspberry Pi Clusters mit 2FA und HTTPS entwickelt wurden. Jedes Code-Snippet hat einen spezifischen Zweck und wird im Detail unten beschrieben.
+
+## Code-Snippet-Verzeichnis
+
+1. **2FA Implementierung**: Dieses Snippet zeigt, wie man eine Zwei-Faktor-Authentifizierung (2FA) auf einem Raspberry Pi Cluster implementiert. Es verwendet die Authy App, die kostenlos verfügbar ist.
+
+2. **HTTPS Setup**: Dieses Snippet zeigt die Schritte, die benötigt werden, um HTTPS auf dem Cluster einzurichten. Es beinhaltet die Erstellung eines SSL-Zertifikats und dessen Integration in den Webserver.
+
+3. **Docker Swarm Setup**: Dieser Code illustriert die Einrichtung von Docker Swarm auf dem Cluster. Es zeigt, wie man Nodes zu einem Swarm hinzufügt und wie man Services im Swarm-Modus ausführt.
+
+4. **Portainer Business Einrichtung**: Dieses Snippet illustriert die Einrichtung von Portainer Business, einer Management-Oberfläche für Docker. Es zeigt, wie man Portainer installiert und konfiguriert, um die Container-Verwaltung zu erleichtern.
+
+5. **Cronjob Setup**: Dieses Snippet zeigt, wie man einen Cronjob auf dem Raspberry Pi einrichtet, um automatische Systemaktualisierungen durchzuführen. Dies hilft dabei, das Cluster auf dem neuesten Stand zu halten.
+
+Bitte beachten Sie, dass einige dieser Code-Snippets spezifische Anforderungen an die Hardware- und Software-Konfiguration stellen. Es wird empfohlen, die entsprechenden Abschnitte im Detail durchzulesen, bevor Sie versuchen, den Code zu verwenden.
+
+Diese Code-Snippets sind Teil einer umfangreicheren Arbeit, die sich mit der Erweiterung des Raspberry Pi Clusters befasst. Sie sind gedacht als Ressource und Anleitung für andere, die ähnliche Projekte durchführen oder sich in das Thema einarbeiten möchten. Bitte zögern Sie nicht, Fragen zu stellen oder Beiträge zu leisten, um diese Ressource zu verbessern.
