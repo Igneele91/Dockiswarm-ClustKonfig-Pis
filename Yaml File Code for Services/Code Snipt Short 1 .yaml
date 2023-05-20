@@ -1,0 +1,4 @@
+
+docker service update --force portainer_portainer
+
+docker service update --force portainer_agent
