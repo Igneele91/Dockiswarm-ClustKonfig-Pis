@@ -16,4 +16,158 @@ services:
         constraints:
           - node.role == manager
 
+##  version 2 ##
+
+version: '3'
+
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=30
+
+
+##  version 3 ##
+
+version: '3'
+
+services:
+  app-monitored-by-watchtower:
+    image: myapps/monitored-by-watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 --scope myscope
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=30
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+
+##  version 4 ##
+
+version: '3'
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 * * *"
+
+
+
+#Moeglichkeit 1 ## 
+
+version: '3.1'
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 * * *"
+    deploy:
+      mode: global
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=259200
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+  app-monitored-by-watchtower:
+    image: myapps/monitored-by-watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+# In dieser Konfiguration:
+# - Watchtower wird alle 3 Tage (259200 Sekunden) nach Updates suchen.
+# - Es läuft im globalen Modus, was bedeutet, dass es auf allen Nodes in Ihrem Docker Swarm läuft.
+# - Es wird auch gestoppte Container einschließen und nach dem Aktualisieren von Containern alte Docker-Images bereinigen.
+# - Watchtower wird nur die Container überwachen und aktualisieren, die mit dem spezifischen Label "com.centurylinklabs.watchtower.scope=myscope" gekennzeichnet sind. 
+#   In diesem Beispiel ist das der app-monitored-by-watchtower-Dienst.
+# Sie können diese Konfiguration in das "Web editor" Feld in Portainer einfügen, wenn Sie einen neuen Stack erstellen. 
+# Geben Sie dem Stack einen Namen, zum Beispiel "watchtower", und klicken Sie dann auf "Deploy the Stack".
+
+
+
+
+
+#Moeglichkeit 2 ##
+
+version: '3.2'
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --cleanup --include-stopped
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+  app-monitored-by-watchtower:
+    image: myapps/monitored-by-watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+  watchtower-scope:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --scope myscope 
+             --cleanup --include-stopped
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+# In dieser Konfiguration haben wir zwei Watchtower-Services definiert: watchtower, der alle Container überwacht, 
+# und watchtower-scope, der nur die Container mit dem Label com.centurylinklabs.watchtower.scope=myscope überwacht. 
+# Beide Services suchen alle drei Tage um 4 Uhr morgens nach Updates.
+
+# Die Konfiguration enthält auch einen Service app-monitored-by-watchtower, der ein Beispiel für einen Service ist, 
+# der von watchtower-scope überwacht wird. Sie können diesen Teil der Konfiguration anpassen, um Ihre eigenen 
+# zu überwachenden Services zu definieren.
+
+# Bitte beachten Sie, dass Sie für den Service app-monitored-by-watchtower das Bild myapps/monitored-by-watchtower 
+# durch das tatsächliche Docker-Bild ersetzen müssen, das Sie verwenden möchten.
+
+# Hinweis: Die obige Konfiguration setzt voraus, dass Sie eine Docker Swarm-Umgebung verwenden und auf einem 
+# Manager-Knoten arbeiten. Wenn Sie eine Einzelcontainer-Umgebung verwenden, müssen Sie die deploy-Abschnitte 
+# entfernen und die docker-compose up Befehl anstelle von docker stack deploy verwenden.
+
+# Bitte beachten Sie auch, dass diese Konfiguration Watchtower so konfiguriert, dass er gestoppte Container 
+# einschließt und alte Docker-Images bereinigt. Wenn Sie dieses Verhalten nicht wünschen, können Sie die 
+# entsprechenden Flags und Umgebungsvariablen entfernen.
+
+
 
