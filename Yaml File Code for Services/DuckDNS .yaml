@@ -1,4 +1,6 @@
 
+### Version 1 ####
+
 version: '3.3's
 services:
   duckdns:
@@ -11,4 +13,36 @@ services:
       mode: global
       restart_policy:
         condition: on-failure
+
+
+### Version 2 ####
+
+version: '3.3'
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    environment:
+      - TZ=Europe/Berlin
+      - SUBDOMAINS=subdomain
+      - TOKEN=your-token
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+
+
+ docker stack deploy -c duckdns.yml duckdns
+
+
+
+### Version 3 ####
+
+
+
+
+
+
+### Version 4 ####
+
+
 
