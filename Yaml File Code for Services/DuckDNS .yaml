@@ -54,10 +54,10 @@ echo url="https://www.duckdns.org/update?domains=exampledomain&token=a7c4d0ad-11
 ### Version 5 ####
 
 
-docker run -d --name=duckdns -e TZ=Europe/London -e SUBDOMAINS=subdomain1,subdomain2
- -e TOKEN=token -v /path/to/appdata/config:/config --restart
-  unless-stopped linuxserver/duckdns
-
+docker run -d --name=duckdns -e TZ=Europe/London -e 
+SUBDOMAINS=subdomain1,subdomain2 -e TOKEN=token -v
+ /path/to/appdata/config:/config --restart 
+ unless-stopped linuxserver/duckdns
 
 
 
@@ -82,6 +82,7 @@ services:
 ### Version 7 ####
 
 
+*/5 * * * * /home/pi/duckdns/duck.sh >/dev/null 2>&1
 
 
 
@@ -89,7 +90,66 @@ services:
 ### Version 8 ####
 
 
+  #!/bin/bash
+  echo url="https://www.duckdns.org/update?domains=exampledomain&token=
+  a7c4d0ad-114e-40ef-ba1d-d217904a50f2&ip=" | curl -k -o ~/duckdns/duck.log -K -
 
 
+*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
+
+
+  docker run -d --name=duckdns -e TZ=Europe/London -e 
+  SUBDOMAINS=subdomain1,subdomain2 -e TOKEN=token -v 
+  /path/to/appdata/config:/config –restart 
+  unless-stopped linuxserver/duckdns
+
+
+
+### Version 9 ####
+
+
+  version: '3.3'
+  services:
+    duckdns:
+      image: linuxserver/duckdns
+      environment:
+        - TZ=Europe/Berlin
+        - SUBDOMAINS=subdomain
+        - TOKEN=your-token
+      deploy:
+        mode: global
+        restart_policy:
+          condition: on-failure
+        placement:
+          constraints:
+            - node.role == manager
+
+  version: '3.3'
+  services:
+    duckdns:
+      image: linuxserver/duckdns
+      environment:
+        - TZ=Europe/Berlin
+        - SUBDOMAINS=subdomain
+        - TOKEN=your-token
+      deploy:
+        mode: global
+        restart_policy:
+          condition: on-failure
+        placement:
+          constraints:
+            - node.role == manager
+
+
+
+
+
+
+
+### Version 10 CNAME ####
+
+  router-quinisimini.com.     CNAME  router-quinisimini.duckdns.org.
+  portainer-quinisimini.com.  CNAME  portainer-quinisimini.duckdns.org.
+  nginxproxy-quinisimini.com. CNAME  nginxproxy-quinisimini.duckdns.org.
 
 

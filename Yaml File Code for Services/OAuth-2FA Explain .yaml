@@ -1,67 +1,76 @@
 
+  ## Befele Oauth2 Proxy ### 
+
+    
+    ## 9.4.2. Wartung und Updates ##
+
+    
+    docker pull portainer/portainer-ce:latest
+    docker stop [Ihr_Portainer_Container_Name]
+    docker rm [Ihr_Portainer_Container_Name]
+    docker run -d -p 9000:9000 --name=[Ihr_Portainer_Container_Name]
+    -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer-ce:latest
 
 
-## Befele Oauth2 Proxy ### 
 
+  ## 9.5. Implementierung von 2FA in Nginx Proxy Manager **
+
+  docker run -d --name=oauth2-proxy --net=webproxy 
+  -v /path/to/oauth2:/config bitnami/oauth2-proxy:latest
   
-  ## 9.4.2. Wartung und Updates ##
-
-   
-  docker pull portainer/portainer-ce:latest
-  docker stop [Ihr_Portainer_Container_Name]
-  docker rm [Ihr_Portainer_Container_Name]
-  docker run -d -p 9000:9000 --name=[Ihr_Portainer_Container_Name]
-   -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer-ce:latest
 
 
-
-## 9.5. Implementierung von 2FA in Nginx Proxy Manager **
-
-docker run -d --name=oauth2-proxy --net=webproxy 
- -v /path/to/oauth2:/config bitnami/oauth2-proxy:latest
- 
+  ### von 9.5 der 2 code  ### 
 
 
-### von 9.5 der 2 code  ### 
+  http_address = "0.0.0.0:4180"
+  upstreams = ["http://[Ihre_Domain]:81"]s
+  provider = "github"
+  email_domains = ["Ihre_Domain"]
+  client_id = "Ihre_Client_ID"
+  client_secret = "Ihr_Client_Geheimnis"
 
 
-http_address = "0.0.0.0:4180"
-upstreams = ["http://[Ihre_Domain]:81"]s
-provider = "github"
-email_domains = ["Ihre_Domain"]
-client_id = "Ihre_Client_ID"
-client_secret = "Ihr_Client_Geheimnis"
+  ### von 9.5 der 3 Befehl  ### 
+
+  docker restart oauth2-proxy
 
 
-### von 9.5 der 3 Befehl  ### 
+  ### Von 9.6 der Befehl  ### 
 
-docker restart oauth2-proxy
-
-
-### Von 9.6 der Befehl  ### 
-
-docker service create --name oauth2-proxy --network webproxy -p 4180:4180
- -v /path/to/oauth2:/config bitnami/oauth2-proxy:latest
+  docker service create --name oauth2-proxy --network webproxy -p 4180:4180
+  -v /path/to/oauth2:/config bitnami/oauth2-proxy:latest
 
 
-### 6 ### 
+  ### 6 ### 
+
+    http_address = "0.0.0.0:4180"
+    upstreams = ["http://localhost:8080/"]
+    client_id = "YOUR-CLIENT-ID"
+    client_secret = "YOUR-CLIENT-SECRET"
+    cookie_secret = "YOUR-COOKIE-SECRET"
+    cookie_domains = ["myapp.com"]
 
 
 
 
+  ### 7 ### 
 
-### 7 ### 
+    docker service create --name oauth2-proxy --network webproxy 
+    -p 4180:4180 -v /path/to/oauth2:/config bitnami/oauth2-proxy:latest
+
+
+
+
+  ### 8 ### Reinfassung Orginal in Arbeit. 
 
 
 
 
 
-### 8 ### 
 
 
-
-
-### 9 ### 
+  ### 9 ### Reinfassung Orginal in Arbeit. 
 
 
 

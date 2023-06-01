@@ -30,3 +30,44 @@ services:
           - node.role == worker
 networks:
   oauth2-proxy: {}
+
+
+
+  version: '3.2'
+  services:
+    watchtower:
+      image: containrrr/watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      command: --schedule "0 0 */3 * * *" --cleanup --include-stopped
+      deploy:
+        mode: global
+        placement:
+          constraints:
+            - node.role == manager
+      environment:
+        - WATCHTOWER_CLEANUP=true
+        - WATCHTOWER_INCLUDE_STOPPED=true
+    app-monitored-by-watchtower:
+      image: myapps/monitored-by-watchtower
+      labels:
+        - "com.centurylinklabs.watchtower.scope=myscope"
+    watchtower-scope:
+      image: containrrr/watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      command: --schedule "0 0 */3 * * *" --scope myscope 
+                --cleanup --include-stopped
+      deploy:
+        mode: global
+        placement:
+          constraints:
+            - node.role == manager
+      environment:
+        - WATCHTOWER_CLEANUP=true
+        - WATCHTOWER_INCLUDE_STOPPED=true
+      labels:
+        - "com.centurylinklabs.watchtower.scope=myscope"
+
+
+
