@@ -64,6 +64,20 @@
 
   ### 8 ### Reinfassung Orginal in Arbeit. 
 
+    version: '3'
+      services:
+        oauth2-proxy:
+          image: bitnami/oauth2-proxy:latest
+          environment:
+            - OAUTH2_PROXY_CLIENT_ID=myclientid
+            - OAUTH2_PROXY_CLIENT_SECRET=myclientsecret
+          volumes:
+            - ./config:/config
+          ports:
+            - 4180:4180
+
+
+    
 
 
 
@@ -71,6 +85,24 @@
 
 
   ### 9 ### Reinfassung Orginal in Arbeit. 
+
+    http_address = "0.0.0.0:4180"
+      https_address = ""
+
+      upstreams = [
+          "http://localhost:8080/"
+      ]
+
+      provider = "github"
+      client_id = "myclientid"
+      client_secret = "myclientsecret"
+
+
+
+
+
+#############  OTHERS #######
+
 
 
 
