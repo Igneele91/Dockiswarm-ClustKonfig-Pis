@@ -1,7 +1,0 @@
-
-
-  docker service ps portainer_portainer
-
-  docker service ps portainer_agent
-
-

@@ -1,5 +1,0 @@
-
- docker service logs portainer_portainer 
-
- docker service logs portainer_agent 
- 
