@@ -166,6 +166,7 @@ docker stack deploy -c docker-compose.yml my-stack
 ## Code von der Website andere Stack Interpretation 
 ## https://alex.thom.ae/2019/10/20/protect-website-oauth2_proxy-traefik/ 
 
+### Zusatz ####################
 
 version: '3.7'
 services:
@@ -201,4 +202,4 @@ networks:
 
 
 
-
+#############################################
