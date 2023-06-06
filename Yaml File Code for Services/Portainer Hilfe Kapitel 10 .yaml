@@ -1,0 +1,43 @@
+
+# 10. Fehlerbehebung bei Portainer - Version Hilfe
+# Bei Problemen mit Portainer können Sie die folgenden Schritte zur Fehlerbehebung
+# ausprobieren:
+
+# 1. Neustart von Portainer:
+# Versuchen Sie, den Portainer-Dienst in Ihrem Docker Swarm neu zu starten. Dies können
+# Sie mit folgenden Befehlen erreichen:
+
+ docker service update --force portainer_portainer
+ docker service update --force portainer_agent
+
+# Diese Befehle erzwingen den Neustart des Portainer-Dienstes und sollte alle aktiven
+# Sitzungen beenden.
+
+# 2. Überprüfen des Status der Docker-Domains auf allen Knoten:
+# Es ist wichtig, dass Docker auf allen Ihren Knoten reibungslos läuft. Um dies zu
+# überprüfen, können Sie den folgenden Befehl auf jedem Knoten ausführen:
+
+ docker info
+
+# Dieser Befehl zeigt Informationen über die Docker-Installation auf dem Knoten,
+# einschliesslich der Statusinformationen der Domain. Überprüfen Sie die Ausgabe, um
+# sicherzustellen, dass der Docker-Domains auf jedem Knoten ordnungsgemäss läuft.
+
+# 3. Überprüfen Sie den Status des Portainer-Dienstes:
+# Den Status des Portainer-Dienstes können Sie mit folgendem Befehl überprüfen:
+
+ docker service ps portainer_portainer
+ docker service ps portainer_agent
+
+# Diese Befehle gibt Ihnen eine Liste aller Tasks für den Portainer-Dienst aus und zeigt
+# Ihnen, ob sie laufen oder beendet wurden.
+
+# 4. Überprüfen Sie die Logs des Portainer-Dienstes:
+# Die Logs des Portainer-Dienstes können auf Fehlermeldungen überprüft werden. Sie
+# können dies tun, indem Sie folgenden Befehle verwenden:
+ 
+ docker service logs portainer_portainer
+ docker service logs portainer_agent
+
+
+

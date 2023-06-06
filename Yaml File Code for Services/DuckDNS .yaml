@@ -1,0 +1,111 @@
+
+## 7. DuckDNS 
+
+# 7.3 Fragen und Antworten zu DuckDNS
+# 7.3.1 Erstellung eines Cronjobs auf einem Raspberry Pi
+# Zur Erstellung eines Cronjobs auf einem Raspberry Pi können Sie die folgenden Schritte befolgen:
+# 1. Öffnen Sie ein Terminal auf Ihrem Raspberry Pi.
+# 2. Geben Sie «crontab -e» ein und drücken Sie die Eingabetaste. Dies öffnet den Crontab-Editor. 
+# Wenn Sie das erste Mal den Crontab-Editor verwenden, wird er Sie wahrscheinlich fragen, 
+# welchen Editor Sie verwenden möchten. Nano ist eine einfache Option und wird oft als Standard festgelegt.
+# 3. Sie sehen nun den Crontab-Editor. Um einen neuen Cronjob hinzuzufügen, fügen Sie eine neue 
+# Zeile am Ende der Datei hinzu. Zum Beispiel könnten Sie den folgenden Eintrag hinzufügen, 
+# um das Duck DNS-Skript alle fünf Minuten auszuführen:
+
+
+
+*/5 * * * * /home/pi/duckdns/duck.sh >/dev/null 2>&1
+
+
+
+# 7.3.3 Wie integriere ich Duck DNS in mein Cluster?
+# Es gibt mehrere Wege, Duck DNS in Ihr Cluster zu nutzen:
+# 1. Als Konfigurationsdatei: Sie können eine Shell-Skriptdatei «duck.sh» erstellen, die
+# regelmässig (alle 5 Minuten) ausgeführt wird, um Ihre öffentliche IP-Adresse an Duck
+# DNS zu melden. Diese Konfigurationsdatei kann auf jedem Knoten Ihres Clusters 
+# ausgeführt werden, der eine Verbindung zum Internet hat.
+# Beispiel für eine «duck.sh» Datei:
+
+
+#!/bin/bash
+echo url="https://www.duckdns.org/update?domains=exampledomain&token=
+a7c4d0ad-114e-40ef-ba1d-d217904a50f2&ip=" | curl -k
+-o ~/duckdns/duck.log -K -
+
+
+
+
+# Ersetzen Sie «exampledomain» durch Ihre spezifische DuckDNS-Subdomain (wie
+# «router-quinisimini», «portainer-quinisimini», «nginxproxy-quinisimini») und
+# «token» durch Ihren persönlichen Token, den Sie von DuckDNS erhalten haben.
+# Sie könnten dann einen Cron-Job erstellen, um dieses Skript alle fünf Minuten
+# auszuführen. Zum Beispiel:
+
+*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
+
+
+
+# 2. Als Service: Sie könnten ein Docker-Image verwenden, z.B. «linuxserver/duckdns»,
+# das einen Duck DNS-Client enthält. Sie können diesen als Service in Ihrem Cluster
+# ausführen, der alle 5 Minuten Ihre IP-Adresse aktualisiert. Dies ist eine praktikable
+# Methode, wenn Ihr Cluster Docker unterstützt.
+# Hier ist ein Beispiel, wie Sie den Docker-Container erstellen könnten:
+
+docker run -d --name=duckdns -e TZ=Europe/London -e
+SUBDOMAINS=subdomain1,subdomain2 -e TOKEN=token -v
+/path/to/appdata/config:/config –restart
+unless-stopped linuxserver/duckdns
+
+
+
+
+# Ersetzen Sie die «SUBDOMAINS» und «TOKEN» durch Ihre spezifischen Werte (wie
+# «router-quinisimini», «portainer-quinisimini», «nginxproxy-quinisimini») und ändern
+# Sie den Pfad zu Ihrer Konfigurationsdatei.
+
+# 3. Als Stack: Wenn Ihr Cluster Docker Swarm unterstützt, können Sie Duck DNS auch
+# als Stack ausführen. In dieser Konfiguration wird Duck DNS als Docker Service innerhalb
+# eines Docker Stacks ausgeführt, der Ihre öffentliche IP-Adresse aktualisiert.
+# Ein Beispiel für einen Docker Swarm Stack, der den Duck DNS Service beinhaltet, könnte
+# folgendermassen aussehen:
+
+
+  version: '3.3'
+  services:
+    duckdns:
+      image: linuxserver/duckdns
+      environment:
+        - TZ=Europe/Berlin
+        - SUBDOMAINS=subdomain
+        - TOKEN=your-token
+      deploy:
+        mode: global
+        restart_policy:
+          condition: on-failure
+        placement:
+          constraints:
+            - node.role == manager
+
+
+
+
+## Nachdem Sie diese Konfiguration in einer Datei namens «duckdns.yml» gespeichert
+## haben, können Sie den Duck DNS-Service mit dem folgenden Befehl starten:
+
+docker stack deploy -c duckdns.yml duckdns
+
+
+## Vergessen Sie nicht, Ihre CNAME-Einträge bei Cloudflare entsprechend einzurichten, um
+## auf die DuckDNS-Adressen zu zeigen:
+
+  router-quinisimini.com.     CNAME  router-quinisimini.duckdns.org.
+  portainer-quinisimini.com.  CNAME  portainer-quinisimini.duckdns.org.
+  nginxproxy-quinisimini.com. CNAME  nginxproxy-quinisimini.duckdns.org. 
+
+
+
+############################################# 
+
+
+
+

@@ -1,0 +1,54 @@
+
+## 6: Cloudflare
+## 6.1 Einführung in Cloudflare
+
+# Erweiterte Anweisungsschritte 1:
+# 1. Besuche die Cloudflare-Website und melde dich mit deinem Konto an.
+# 2. Sobald du eingeloggt bist, findest du auf deinem Dashboard die Option "Add a Site" (Website hinzufügen). Klicke darauf.
+# 3. Trage den Namen deiner Domain (quinisimini.com) in das vorgesehene Feld ein und klicke auf "Add Site" (Website hinzufügen).
+# 4. Du wirst zu einer Seite weitergeleitet, welche die DNS-Einträge deiner Domain anzeigt. Hier kannst du diese Einträge anpassen oder neue hinzufügen. 
+#    Ein Beispiel für einen DNS-Eintrag könnte so aussehen:
+
+Typ: A
+Name: quinisimini.com
+Wert: 192.0.2.1
+TTL: Auto
+Proxy-Status: Proxied
+
+
+# Erweiterte Anweisungsschritte 2:
+# 1. Wähle auf dem Dashboard deines Cloudflare-Kontos den Tab "DNS".
+# 2. Klicke auf die Schaltfläche "Eintrag hinzufügen".
+# 3. Wähle den Eintragstyp "A" und gib den Namen deiner Subdomain ein (zum Beispiel "router").
+# 4. Gib die IP-Adresse deines Raspberry Pi-Manager-Knotens ein und klicke auf "Speichern".
+# Ein Beispiel für einen DNS-Eintrag für eine Subdomain könnte so aussehen:
+
+
+Typ: A
+Name: router
+Wert: 192.0.2.2
+TTL: Auto
+Proxy-Status: Proxied
+
+
+
+# Erweiterte Anweisungsschritte 3:
+# 1. Wähle auf dem Dashboard deines Cloudflare-Kontos den Tab "SSL/TLS".
+# 2. Klicke auf die Schaltfläche "Zertifikat erstellen".
+# 3. Ein Dialogfenster öffnet sich, in dem du die Details deines Zertifikats eingeben kannst. 
+# Du kannst die Standardeinstellungen verwenden oder, falls nötig, individuelle Einstellungen vornehmen.
+# 4. Klicke auf "Weiter" und dann auf "Erstellen", um dein Zertifikat zu erstellen.
+# 5. Nachdem das Zertifikat erstellt wurde, erhältst du zwei Teile: den Zertifikatscode und den Private Key. 
+# Du musst beide auf deinem Server installieren.
+# Ein Beispiel für die Eingabe eines Zertifikats könnte so aussehen:
+
+Hostnames: *.quinisimini.com, quinisimini.com
+Expiration: 15 years
+Key Type: RSA
+Key Size: 2048 bits
+
+
+
+#################################
+
+

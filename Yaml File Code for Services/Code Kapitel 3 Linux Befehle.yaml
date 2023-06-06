@@ -1,0 +1,184 @@
+
+#############################
+
+
+
+
+# 3.2 Docker-Compose
+# Mit Docker-Compose können Multi-Container-Docker-Anwendungen definiert und
+# verwaltet werden. Die Konfiguration erfolgt in einer YAML-Datei
+# («docker-compose.yml»). Hier ist ein Beispiel für eine Docker-Compose-
+# Konfigurationsdatei:
+
+
+
+version: "3"
+services:
+    web:
+      image: nginx:alpine
+      ports:
+      - "80:80"
+    db:
+      image: postgres:11
+      environment:
+      POSTGRES_PASSWORD: example
+
+
+
+
+# 3.3 Docker-Swarm:
+# Docker-Swarm bietet native Clustering- und Scheduling-Funktionen für Docker. Docker
+# Swarm verwendet ebenfalls eine YAML-Datei, die jedoch spezifische Dienste und
+# Konfigurationen für die Docker-Swarm-Umgebung enthält. Hier ist ein Beispiel für eine
+# Docker-Swarm-Konfigurationsdatei:
+
+
+version: "3"
+services:
+    web:
+      image: nginx:alpine
+      ports:
+        - "80:80"
+      deploy:
+          replicas: 3
+        update_config:
+          parallelism: 1
+        restart_policy:
+          condition: on-failure
+
+
+# 3.4.1 Konfiguration:
+# Eine Konfiguration in Docker wird verwendet, um die Einstellungen und Parameter für die
+# Ausführung von Containern zu definieren. Sie enthält Informationen wie den Namen des
+# Dienstes, das verwendete Image, die Portweiterleitung, Umgebungsvariablen und andere
+# spezifische Konfigurationsoptionen. Eine Konfiguration allein definiert jedoch noch keine
+# laufenden Dienste oder Instanzen. Hier ist ein Beispiel für eine Konfigurationsdatei:
+
+
+    # Erklärung: Die Konfigurationsdatei «docker-compose.yml» enthält die
+    # Einstellungen für einen Webdienst, der das Image "nginx:latest" verwendet und
+    # den Port 80 nach aussen weiterleitet.
+
+
+
+
+## Codebeispiel:
+version: '3'
+services:
+    web:
+      image: nginx:latest
+      ports:
+        - 80:80
+
+
+
+##  Dateiname des Beispiels: «docker-compose.yml»
+
+# 3.4.2 Service:
+# Ein Service in Docker repräsentiert eine laufende Instanz eines Containers innerhalb
+# eines Docker Swarm-Clusters. Ein Service basiert auf einer Konfigurationsdatei und
+# definiert die Anzahl der gewünschten Replikate des Containers, Netzwerkverbindungen,
+# Volumes und andere spezifische Einstellungen. Ein Service kann als eigenständige
+# Einheit betrachtet werden, die auf Anforderungen reagiert und verwaltet werden kann.
+# 
+# Erklärung: Der Service wird nicht durch eine spezifische Datei definiert, sondern
+# durch den Befehl «docker service create» oder andere Swarm-spezifische
+# Befehle. Dies ermöglicht eine flexible Verwaltung der Services innerhalb des
+# Swarm-Clusters, ohne dass eine separate Datei erforderlich ist. Das "N/A" in der
+# Dateinamenangabe bedeutet, dass für den Service selbst keine spezifische
+# Konfigurationsdatei erforderlich ist.
+
+
+
+
+
+## Codebeispiel:
+  docker service create --name web --replicas 3 nginx:latest
+
+
+
+
+# 3.4.5 Stack:
+# Ein Stack in Docker ist eine Gruppe von miteinander verbundenen Diensten, die
+# gemeinsam ausgeführt und verwaltet werden. Ein Stack basiert auf einer speziellen
+# Stack-Konfigurationsdatei, die die verschiedenen Dienste und deren Konfigurationen
+# innerhalb des Stacks definiert. Ein Stack ermöglicht die einfache Bereitstellung und
+# Skalierung von komplexen Anwendungen, die aus mehreren Diensten bestehen.
+
+# Hier ist ein Beispiel für eine Stack-Konfigurationsdatei:
+# • Erklärung: Die Stack-Konfigurationsdatei «docker-compose.stack.yml» definiert
+# einen Webdienst, der das Image "nginx:latest" verwendet, und einen
+# Datenbankdienst, der das Image "mysql:latest" verwendet.
+
+# Codebeispiel:
+
+version: '3'
+services:
+  web:
+    image: nginx:latest
+    ports:
+          - 80:80
+  db:
+    image: mysql:latest
+environment:
+    - MYSQL_ROOT_PASSWORD=password 
+
+
+
+
+
+# 3.5 Grundlegende Linux-Befehle
+# Hier sind zehn grundlegende Linux-Befehle und ihre Funktionen:
+# 1. «ls»: Listet alle Dateien und Verzeichnisse auf.
+# 2. «cd»: Ändert das aktuelle Arbeitsverzeichnis.
+# 3. «pwd»: Zeigt das aktuelle Arbeitsverzeichnis an.
+# 4. «cat»: Zeigt den Inhalt einer Datei an.
+# 5. «touch»: Erstellt eine leere Datei.
+# 6. «rm»: Löscht eine Datei oder ein Verzeichnis.
+# 7. «mkdir»: Erstellt ein neues Verzeichnis.
+# 8. «cp»: Kopiert Dateien und Verzeichnisse.
+# 9. «mv»: Verschiebt oder benennt Dateien und Verzeichnisse um.
+# 10. «nano»: Öffnet den Nano-Texteditor zur Bearbeitung einer Datei.
+
+
+
+
+
+
+
+# 3.7 Textbearbeitung mit «echo» und «nano»
+
+# «echo» und «nano» sind zwei nützliche Befehle in Linux zur Arbeit mit Text:
+# • «echo»: Wird verwendet, um eine Zeichenkette auf der Standardausgabe oder in
+# einer Datei auszugeben.
+
+
+# «nano»: Ein einfacher Texteditor, der zum Öffnen und Bearbeiten von Dateien
+# verwendet wird.
+
+# Hier sind einige Beispiele für die Verwendung von «echo» und «nano» zur
+# Textbearbeitung:
+
+# 1. Erstellen Sie eine neue Datei und schreiben Sie Text hinein mit «echo»:
+ echo 'Dies ist ein einfacher Text.' > datei1.txt
+
+# 2. Erstellen Sie eine leere Datei mit «touch»:
+ touch datei3.txt
+
+# 3. Fügen Sie zusätzlichen Text in eine bestehende Datei ein mit «echo»:
+ echo 'Dies ist zusätzlicher Text.' >> datei1.txt
+
+# 4. Anzeigen des Inhalts einer Datei mit «cat»:
+ cat datei1.txt
+
+# 5. Erstellen und Bearbeiten einer Datei mit «nano»:
+ nano datei2.txt
+
+
+## 6. Anzeigen der ersten Zeilen einer Datei mit «head»:
+ head datei2.txt
+
+
+
+
+
