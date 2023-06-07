@@ -2,6 +2,7 @@
 ## 4.2. Installation und Konfiguration von Watchtower
 ## Die Installation von Watchtower erfolgt über Docker. Sie können den WatchtowerContainer mit dem folgenden Befehl installieren:
 
+##    ----------> gehe auf Version 3.4 meine Empfehlung 
 
 Version: '3'
 services:
@@ -14,10 +15,10 @@ Command: --schedule "0 0 4 * * *"
 
 ## 4.6 Watchtower-Stack-Setup in Portainer Business
 ## Weg 1: Erstellung und Start eines Watchtower-Stacks direkt vom Node-1
-## 1. Erstellen Sie eine Stack-Konfigurationsdatei für Watchtower
+## 1. Erstellen Sie eine Stack-Konfigurationsdatei für Watchtower       ----------> gehe auf Version 3.4 meine Empfehlung 
 
 
-Version: '3'
+Version: '3'                                                
 services:
 watchtower:
 image: containrrr/watchtower
@@ -41,7 +42,7 @@ docker stack deploy -c watchtower-stack.yml watchtower
 
 ## 4.7 Meine Konfigurationen und 2 Möglichkeiten
 ## 1.0 Möglichkeit 1: Standard-Konfiguration
-## 1.1 Docker Stack-Konfiguration
+## 1.1 Docker Stack-Konfiguration            ----------> gehe auf Version 3.4 meine Empfehlung 
 
 
 version: '3.1'
@@ -78,10 +79,10 @@ services:
 
 
 
-## 2.1 Docker Stack-Konfiguration
+## 2.1 Docker Stack-Konfiguration        ----------> gehe auf Version 3.4 meine Empfehlung 
 
 
-  version: '3.2'
+version: '3.2'
 services:
   watchtower:
     image: containrrr/watchtower
@@ -136,6 +137,128 @@ services:
 # Bitte beachten Sie auch, dass diese Konfiguration Watchtower so konfiguriert, dass er gestoppte Container 
 # einschließt und alte Docker-Images bereinigt. Wenn Sie dieses Verhalten nicht wünschen, können Sie die 
 # entsprechenden Flags und Umgebungsvariablen entfernen.
+
+
+
+## Neue Version  ######################        ----------> gehe auf Version 3.4 meine Empfehlung 
+##################  Version 3.3 #######       ----------> gehe auf Version 3.4 meine Empfehlung 
+
+
+
+version: '3.3'
+services:
+  watchtower-manager:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --cleanup --include-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+
+  app-monitored-by-watchtower-worker:
+    image: myapps/monitored-by-watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+
+  watchtower-scope-global:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --scope myscope --cleanup --include-stopped
+    deploy:
+      mode: global
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+```
+
+
+# Mit diesem Code:
+# - Der Dienst `watchtower-manager` wird ausschließlich auf dem Manager-Knoten ausgeführt.
+# - Der Dienst `app-monitored-by-watchtower-worker` wird ausschließlich auf Worker-Knoten ausgeführt. Ich habe 
+#  angenommen, dass dieser Dienst kein spezielles Verhalten wie Watchtower hat, daher fehlen die Umgebungsvariablen
+#  und die Kommandooptionen von Watchtower.
+# - Der Dienst `watchtower-scope-global` wird auf allen Knoten ausgeführt, sowohl auf Managern als auch auf Workern. 
+
+# Bitte beachten Sie, dass der `replicas: 1` Befehl in den Diensten `watchtower-manager` und `app-monitored-by-watchtower-worker` sicherstellt, dass nur eine Instanz des Dienstes läuft. Wenn Sie mehrere Instanzen eines Dienstes auf Worker-Knoten oder Managern haben möchten, können Sie den Wert entsprechend anpassen. 
+
+# Bitte beachten Sie auch, dass der `mode: global` Befehl im Dienst `watchtower-scope-global` sicherstellt, dass auf jedem Knoten im Swarm eine Instanz des Dienstes ausgeführt wird. 
+
+# Diese Einstellungen gelten nur, wenn Sie Docker Swarm verwenden. Wenn Sie eine andere Orchestrierungslösung verwenden, wie z.B. Kubernetes, müssen Sie die spezifischen Methoden und Befehle dieser Plattform verwenden, um die Platzierung und Replikation von Diensten zu steuern.
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+## Best Konfiguration für den Watchtowe Stack 
+
+## Neue Version 
+##################  Version 3.4 #########################
+
+
+version: '3.4'
+services:
+  watchtower-manager:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --cleanup --include-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+  app-monitored-by-watchtower-global:
+    image: myapps/monitored-by-watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+    deploy:
+      mode: global
+
+  watchtower-scope-worker:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 */3 * * *" --cleanup --include-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker 
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    labels:
+      - "com.centurylinklabs.watchtower.scope=myscope"
+
+
+
+##################################################################################################
 
 
 
