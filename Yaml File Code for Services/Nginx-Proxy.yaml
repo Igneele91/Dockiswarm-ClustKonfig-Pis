@@ -1,5 +1,35 @@
 
 
+
+### Hinweis in der Doku: 
+
+## Installation des Nginx Proxy Managers in verschiedenen Varianten ## 
+####################################################################################################################################################################
+## Die Ausfürhrung die Funktioniert und ich in meinem Cluster einsetzte ist am untersten Ende der Doku zu finden.
+####################################################################################################################################################################
+## Ihr findet hier nicht nur den Code von meiner Abschlussarbeit, sondern auch die Dokumentation dazu. 
+
+## Aber meine empfelung ist, lest euch die Doku durch und schaut zu unterste Konfiguration an da diese Funktioniert.
+
+## Und ich sie in meinem Cluster einsetzte. 
+
+## Es ist alles beschrieben wie ich es gemacht habe.
+
+## Fals ihr was nicht versteht oder nicht weiter kommt, dann fragt Chagtpt um Hilfe. 
+
+## Ich helfe euch gerne weiter. Via Github oder via Discord.
+
+## Viel Spass beim Lesen und ausprobieren.
+
+## Gruss Fabian
+
+
+
+##################################################################################
+##################################################################################
+##################################################################################
+
+
 ## 5.2. Installation des Nginx Proxy Managers
 
 ## Die Installation erfolgt über ein Docker Compose-File. Ein Beispiel für ein Docker Swarmkompatibles File sieht folgendermassen aus:
@@ -213,8 +243,6 @@ services:
 ## Hier unten der Code ohne Kommentare 
 
 
-
-
 version: '3.9'
 services:
   app:
@@ -263,15 +291,58 @@ services:
         condition: on-failure
 
 
-
-
-
-
-
-
-
+##################################################################################
+##################################################################################
 ##################################################################################
 
+
+### Anleitung eine Warianten davon  ######### 
+
+
+
+# Natürlich, kein Problem. Hier ist der überarbeitete Schritt-für-Schritt-Prozess mit den aktualisierten Anpassungen:
+
+# 1. Melden Sie sich über SSH oder eine andere Methode auf Ihrem Host-System an.
+
+# 2. Navigieren Sie zu dem Verzeichnis, in dem Sie die "nginx-proxy-config.json" 
+# Datei erstellen möchten.
+
+    ```
+    cd /home/pi/
+    ```
+
+# 3. Erstellen Sie die "nginx-proxy-config.json" Datei mit einem Texteditor Ihrer Wahl. In diesem Beispiel verwenden wir den nano-Editor:
+
+    ```
+    nano nginx-proxy-config.json
+    ```
+
+# 4. Fügen Sie den folgenden Inhalt in die Datei ein und passen 
+# Sie die Werte an Ihre Umgebung an:
+
+    ```json
+    {
+      "database": {
+        "engine": "mysql",
+        "host": "db",
+        "name": "npm",
+        "user": "npm",
+        "password": "npm",
+        "port": 3306
+      }
+    }
+    ```
+
+# 5. Speichern Sie die Datei und beenden Sie den Texteditor. Wenn Sie nano verwenden,
+# können Sie dies tun, indem Sie `Ctrl+X` drücken, dann `Y` und schließlich `Enter`.
+
+# 6. Aktualisieren Sie nun die Docker-Compose-Datei auf Ihrem Host-System oder in Portainer, 
+# um den Pfad zur "nginx-proxy-config.json" Datei anzugeben. Stellen Sie sicher, dass Sie den 
+# absoluten Pfad zur Datei verwenden, z.B. "/home/pi/nginx-proxy-config.json".
+
+## Hier ist ein aktualisiertes Beispiel für Ihre Docker-Compose-Datei:
+
+## Yaml Stack File
 
 version: '3.9'
 services:
@@ -282,9 +353,17 @@ services:
       - '81:81'
       - '443:443'
     volumes:
-      - ./config.json:/app/config/production.json
+      - /home/pi/nginx-proxy-config.json:/app/config/production.json
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    depends_on:
+      - db
     deploy:
       mode: replicated
       replicas: 1
@@ -293,6 +372,208 @@ services:
           - node.role == manager
       restart_policy:
         condition: on-failure
+
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+```
+
+# Nachdem Sie diese Schritte durchgeführt haben, sollten Sie den Docker-Stack neu starten, damit die Änderungen wirksam werden.
+
+# Wenn Sie die Docker-Compose-Datei mit dem Befehl `docker-compose up -d` verwenden,
+# können Sie den Stack mit dem Befehl `docker-compose down` herunterfahren und dann mit dem Befehl `docker-compose up -d` neu starten.
+
+
+version: '3.6'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80' 
+      - '443:443' 
+      - '81:81' 
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+
+
+
+##################################################################################
+##################################################################################
+##################################################################################
+
+
+
+## Anleitunng die Ich in meinem Fall verwendet habe.
+
+## Dieser Stack funktioniert, haltet euch genau daran und es funktioniert.
+
+## Diese Version läuft in meiem Cluster. 
+
+### Verbesserte Anleitung #####   
+
+
+
+Docker Stack-Code (nginx-proxy-manager.yml):
+
+```yaml
+version: '3.9'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - /home/pi/nginx-proxy-config.json:/app/config/production.json
+      - /home/pi/data:/data
+      - /home/pi/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /home/pi/mysql:/var/lib/mysql
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+```
+
+Anleitung:
+
+1. Melden Sie sich über SSH oder eine andere Methode auf Ihrem Host-System an.
+
+2. Navigieren Sie zum Verzeichnis "/home/pi", in dem Sie den Docker Stack erstellen möchten.
+
+   ```
+   cd /home/pi
+   ```
+
+3. Erstellen Sie die Datei "nginx-proxy-manager.yml" und öffnen Sie sie in einem Texteditor Ihrer Wahl.
+
+   ```
+   nano nginx-proxy-manager.yml
+   ```
+
+4. Kopieren Sie den oben angegebenen Docker Stack-Code und fügen Sie ihn in die "nginx-proxy-manager.yml" Datei ein.
+
+5. Speichern Sie die Datei und beenden Sie den Texteditor (in nano drücken Sie `Ctrl+X`, dann `Y` und schließlich `Enter`).
+
+6. Überprüfen Sie, ob die Verzeichnisse "/home/pi/data", "/home/pi/letsencrypt" und "/home/pi/mysql" existieren. Sie können dies überprüfen, indem Sie den folgenden Befehl ausführen:
+
+   ```
+   ls /home/pi/data
+   ls /home/pi/letsencrypt
+   ls /home/pi/mysql
+   ```
+
+   Falls die Verzeichnisse nicht vorhanden sind, können Sie sie mit den folgenden Befehlen erstellen:
+
+   ```bash
+   mkdir /home/pi/data
+   mkdir /home/pi/letsencrypt
+   mkdir /home/pi/mysql
+   ```
+
+7. Öffnen Sie die Portainer-Oberfläche und navigieren Sie zum Bereich "Stacks".
+
+8. Wählen Sie "Stack erstellen" und geben Sie den Namen "nginx-proxy-manager" ein.
+
+9. Wählen Sie "Docker Compose (YAML)" als Orchestrierungstyp aus und fügen Sie den Inhalt der "nginx-proxy-manager.yml" Datei in das Textfeld ein.
+
+10. Klicken Sie auf "Erstellen" und der Docker Stack "nginx-proxy-manager" wird erstellt und gestartet.
+
+Um den Docker
+
+-Stack über die Befehlszeile zu starten, verwenden Sie den folgenden Befehl:
+
+```bash
+docker stack deploy -c nginx-proxy-manager.yml nginx-proxy-manager
+```
+
+Stellen Sie sicher, dass Sie sich im Verzeichnis "/home/pi" befinden, in dem sich die "nginx-proxy-manager.yml" Datei befindet, bevor Sie den Befehl ausführen.
+
+Bitte beachten Sie, dass Sie die Verzeichnisse und Dateinamen entsprechend Ihrer Umgebung anpassen müssen, falls Sie andere Pfade oder Namen verwendet haben.
+
+
+
+####################################################################################################################################################################
+####################################################################################################################################################################
+####################################################################################################################################################################
+
+
+
+
+
+################## Ende der Anleitung die Ich in meinem Fall verwendet habe. ###############################################
+
 
 
 

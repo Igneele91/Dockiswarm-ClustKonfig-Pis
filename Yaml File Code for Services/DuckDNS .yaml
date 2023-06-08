@@ -103,8 +103,38 @@ docker stack deploy -c duckdns.yml duckdns
   nginxproxy-quinisimini.com. CNAME  nginxproxy-quinisimini.duckdns.org. 
 
 
-
 ############################################# 
+############################################# 
+############################################# 
+
+
+
+############ Duck DNS im CLuster ############
+
+
+version: '3.3'
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    environment:
+      - TZ=Europe/Berlin
+      - SUBDOMAINS=router-quinisimini,portainer-quinisimini,nginxproxy-quinisimini
+      - TOKEN= ----------- einfügen ------------
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+
+
+## Ich hoffe alle haben verstanden wie ich subdomains bei duckdns zusätzlich erstellt habe.
+## Einfach das gleich rein wie von Cloudflare !! 
+
+
+
 
 
 

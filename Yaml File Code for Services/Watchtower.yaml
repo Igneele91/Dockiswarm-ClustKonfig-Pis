@@ -262,3 +262,29 @@ services:
 
 
 
+
+
+### Schlicht und einfache Version ##############
+
+
+version: '3.5'
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 */3 * * *" --cleanup --include-stopped
+    deploy:
+      mode: global
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=259200
+
+
+
+
+##################################################################################################
+
+
+
