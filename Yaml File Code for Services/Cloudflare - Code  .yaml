@@ -52,3 +52,40 @@ Key Size: 2048 bits
 #################################
 
 
+### Detaillierte Anleitung ## 
+
+
+#
+# Schritte zum Erstellen von CNAME-Einträgen in Cloudflare:
+# 
+# 1. Melden Sie sich bei Ihrem Cloudflare-Konto an und gehen Sie zu Ihrem Dashboard.
+# 
+# 2. Wählen Sie die Domain aus, für die Sie die CNAME-Einträge erstellen möchten.
+# 
+# 3. Klicken Sie im Dashboard auf den Tab "DNS".
+# 
+# 4. Klicken Sie auf "Add record".
+# 
+# 5. Wählen Sie im Dropdown-Menü "Type" die Option "CNAME".
+# 
+# 6. Geben Sie im Feld "Name" den Namen Ihrer Subdomain ein, z.B. "router" für router-quinisimini.com.
+# 
+# 7. Geben Sie im Feld "Target" den DuckDNS-Subdomainnamen ein, auf den dieser Eintrag verweisen soll, z.B. router-quinisimini.duckdns.org.
+# 
+# 8. Stellen Sie sicher, dass der Proxy-Status auf "Proxied" eingestellt ist, um die Vorteile von Cloudflares Sicherheits- und Leistungsmerkmalen zu nutzen.
+# 
+# 9. Klicken Sie auf "Save".
+# 
+# Wiederholen Sie diese Schritte für jede Ihrer Subdomains. 
+# 
+# Nachdem Sie diese Schritte ausgeführt haben, werden Anfragen an Ihre Subdomains (z.B. router-quinisimini.com) von Cloudflare an DuckDNS (router-quinisimini.duckdns.org) weitergeleitet, der dann die Anfrage an die aktuelle IP-Adresse Ihres Servers weiterleitet.
+# 
+# Bitte beachten Sie, dass DNS-Änderungen manchmal einige Zeit benötigen, um sich weltweit zu verbreiten. Daher könnte es eine Weile dauern, bis diese Änderungen vollständig wirksam werden.
+#
+
+
+
+
+#################################################
+
+
