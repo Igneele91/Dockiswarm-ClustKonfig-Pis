@@ -1,0 +1,47 @@
+
+
+
+
+#################################################
+
+
+# Schritte zur Einrichtung der Portweiterleitung auf UDM Pro:
+# 1. Melden Sie sich bei Ihrem UDM Pro-Router an und gehen Sie zur Seite "Portweiterleitung".
+# 2. Klicken Sie auf "Portweiterleitung hinzufügen".
+# 3. Geben Sie die Details für die Portweiterleitung ein:
+#    - Name: Dies ist nur zur Referenz. Sie können einen Namen eingeben, der die Funktion des Ports beschreibt (z.B. "nginxproxy").
+#    - Öffentlicher Port: Dies ist der Port, auf den Ihre Subdomain hört. Für HTTPS-Verkehr ist dies normalerweise 443.
+#    - Lokale IP-Adresse: Dies ist die interne IP-Adresse Ihres Servers, auf dem der entsprechende Service läuft. In Ihrem Fall ist dies 192.168.1.211.
+#    - Lokaler Port: Dies ist der Port, auf dem Ihr Service läuft. Für nginxproxy-quinisimini und portainer-quinisimini ist dies 81.
+# 4. Klicken Sie auf "Änderungen anwenden".
+# Wiederholen Sie diesen Prozess für jeden Service, den Sie einrichten möchten.
+
+port_forwarding_rules:
+  - subdomain: nginxproxy-quinisimini.com
+    local_IP_address: 192.168.1.211
+    local_port: 81
+    public_port: 443
+  - subdomain: portainer-quinisimini.com
+    local_IP_address: 192.168.1.211
+    local_port: 81
+    public_port: 443
+  - subdomain: router-quinisimini.com
+    local_IP_address: 192.168.1.1
+    local_port: null
+    public_port: 443
+
+# Bitte beachten Sie, dass Sie für jeden Service unterschiedliche öffentliche Ports benötigen, wenn sie alle auf demselben Server ausgeführt werden.
+# Wenn Sie jedoch verschiedene Subdomains verwenden und jede auf einen anderen Dienst verweist, können Sie den gleichen öffentlichen Port (in der Regel 443 für HTTPS) verwenden.
+# Für die Subdomain router-quinisimini.com, die auf den Router selbst verweist, ist die Konfiguration etwas anders und Sie müssen möglicherweise
+# spezielle Regeln erstellen, um den Zugriff auf die Router-Verwaltungsoberfläche zu ermöglichen.
+# Alle diese Einstellungen voraussetzen, dass Sie SSL/TLS verwenden und Ihren gesamten Verkehr über Port 443 (den Standard-HTTPS-Port) leiten.
+# Wenn Sie einen anderen Port verwenden möchten, müssen Sie diesen anpassen.
+
+
+
+
+#################################################
+
+
+
+
