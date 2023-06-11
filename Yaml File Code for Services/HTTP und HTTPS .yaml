@@ -1,0 +1,46 @@
+
+
+
+#################################################
+
+
+# Schritte zur Konfiguration von Nginx Proxy Manager und Erstellung von HTTPS-Zertifikaten:
+
+# 1. Stellen Sie sicher, dass Ihre Dienste richtig konfiguriert sind und über HTTP auf den von Ihnen festgelegten Ports erreichbar sind.
+
+# 2. Konfigurieren Sie Nginx Proxy Manager, um die HTTP-Verbindungen auf die richtigen Dienste zu leiten.
+
+# 3. Stellen Sie sicher, dass Ihre Domain auf die IP-Adresse Ihres Servers zeigt und dass die DNS-Änderungen vollständig verbreitet wurden.
+
+# 4. Überprüfen Sie, ob Sie auf Ihre Dienste zugreifen können, indem Sie http://router-quinisimini.com, http://portainer-quinisimini.com oder http://nginxproxy-quinisimini.com in Ihren Webbrowser eingeben. Sie sollten in der Lage sein, auf Ihren Dienst zuzugreifen.
+
+# 5. Wenn das funktioniert, können Sie dann mit dem Erstellen von HTTPS-Zertifikaten beginnen.
+
+# Zum Erstellen von HTTPS-Zertifikaten in Nginx Proxy Manager:
+
+# 1. Gehen Sie zum Nginx Proxy Manager Dashboard.
+
+# 2. Klicken Sie auf "SSL Certificates" im linken Menü.
+
+# 3. Klicken Sie auf die Schaltfläche "+ New SSL Certificate".
+
+# 4. Wählen Sie "Request a new SSL Certificate".
+
+# 5. Geben Sie Ihre Domainnamen (router-quinisimini.com, portainer-quinisimini.com oder nginxproxy-quinisimini.com) ein und stellen Sie sicher, dass "Force SSL" aktiviert ist.
+
+# 6. Wählen Sie "Let's Encrypt" als Zertifikatanbieter und geben Sie eine gültige E-Mail-Adresse ein.
+
+# 7. Klicken Sie auf "Save".
+
+# Nginx Proxy Manager wird dann versuchen, ein neues HTTPS-Zertifikat von Let's Encrypt zu erhalten. Dies kann einige Minuten dauern. Wenn der Prozess erfolgreich war, wird das neue Zertifikat in Ihrer SSL-Zertifikatliste angezeigt.
+
+# 8. Gehen Sie zu "Hosts -> Proxy Hosts" und bearbeiten Sie den entsprechenden Host. Im Abschnitt "SSL" wählen Sie Ihr neu erstelltes Zertifikat aus und speichern die Änderungen.
+
+# Nun sollten Ihre Dienste über HTTPS erreichbar sein. Sie können dies überprüfen, indem Sie https://router-quinisimini.com, https://portainer-quinisimini.com oder https://nginxproxy-quinisimini.com in Ihren Webbrowser eingeben. Sie sollten eine sichere Verbindung zu Ihrem Dienst sehen.
+
+
+#################################################
+
+
+
+
