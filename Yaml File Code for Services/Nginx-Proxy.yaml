@@ -568,6 +568,7 @@ Bitte beachten Sie, dass Sie die Verzeichnisse und Dateinamen entsprechend Ihrer
 ####################################################################################################################################################################
 ####################################################################################################################################################################
 
+```
 
 version: '3.9'
 services:
@@ -625,6 +626,9 @@ services:
 networks:
   mynetwork:
 
+```
+
+
 ################## Ende der Anleitung die Ich in meinem Fall verwendet habe. ###############################################
 
 
@@ -648,6 +652,7 @@ Nginx Proxy Manager-Änderungen:
 # und sicherzustellen, dass der Dienst korrekt gestartet wird. Diese Änderungen umfassten auch das Hinzufügen 
 # von Umgebungsvariablen und Labels, um Authelia zu integrieren und den Dienst über Traefik verfügbar zu machen.
 
+```
 
 version: '3.9'
 services:
@@ -694,7 +699,7 @@ networks:
   mynetwork:
     external: true
 
-
+```
 
 ##############################   Finish #######################  
 
@@ -717,6 +722,9 @@ No Traefik No
 ## Entschuldigen Sie bitte für jegliche Unstimmigkeiten. 
 ## Lassen Sie uns den 
 Nginx Proxy Manager Stack anpassen: 
+
+
+```
 
 version: '3.9'
 services:
@@ -749,7 +757,7 @@ services:
         condition: on-failure
 
   db:
-    image: 'jc21/mariadb-aria:10.4'
+    image: 'jc21/mariadb-aria:latest'
     environment:
       MYSQL_ROOT_PASSWORD: 'npm'
       MYSQL_DATABASE: 'npm'
@@ -772,6 +780,8 @@ networks:
   mynetwork:
     external: true
 
+
+```
 
 Dieser angepasste Stack enthält jetzt "restart_policy" unter dem "deploy" Abschnitt sowohl 
 für den "app" als auch für den "db" Service und die Netzwerkzuweisung ist im korrekten Abschnitt. 
