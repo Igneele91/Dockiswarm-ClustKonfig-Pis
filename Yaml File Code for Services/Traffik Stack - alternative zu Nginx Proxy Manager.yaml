@@ -1,0 +1,65 @@
+
+Was ist Traefik?
+
+Traefik ist ein moderner HTTP-Reverse-Proxy und Load-Balancer, der entwickelt wurde, 
+um Bereitstellungen von Microservices zu vereinfachen. Es unterstützt mehrere 
+Backends (Docker, Swarm Mode, Kubernetes, Marathon, Consul, Etcd, Rancher, Amazon ECS und viele andere) 
+zur Verwaltung seiner Konfiguration automatisch und dynamisch.
+
+Wie funktioniert Traefik?
+
+Traefik verbindet sich mit Ihrem Dienst-Registry oder Orchestrator-API und 
+konfiguriert sich selbst automatisch und dynamisch, um eingehenden Verkehr zu Ihren Anwendungen zu routen. 
+Das bedeutet, dass Sie Traefik sagen können, dass es auf Ihre Orchestrator-API (z.B. Docker oder Kubernetes) hören soll, 
+und es wird automatisch die korrekten Routing-Regeln anwenden, wenn Sie Ihre Anwendungen starten und stoppen.
+
+Traefik kann auch automatisch Let's Encrypt SSL-Zertifikate für Ihre Domains beantragen und erneuern, 
+was die Notwendigkeit für manuelle Interventionen zur Konfiguration von SSL-Zertifikaten stark reduziert.
+
+Hier ist ein einfacher Traefik-Stack, den Sie in Portainer verwenden können:
+
+version: "3.3"
+
+services:
+  traefik:
+    image: traefik:v2.3
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myresolver.acme.email=youremail@example.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /path/to/letsencrypt:/letsencrypt
+    networks:
+      - web
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true
+
+
+Bitte beachten Sie, dass Sie Ihre eigene E-Mail-Adresse für youremail@example.com und 
+den richtigen Pfad für /path/to/letsencrypt angeben müssen.
+
+Dieser Stack startet Traefik und konfiguriert es so, dass es Docker als Backend-Provider verwendet. 
+Es hört auf Port 80 und routet den Verkehr automatisch zu Ihren Docker-Diensten. Es verwendet Let's Encrypt, um 
+SSL-Zertifikate zu generieren und zu erneuern und speichert diese Zertifikate im /letsencrypt-Verzeichnis.
+
+Dies ist nur ein einfaches Beispiel. Traefik ist ein sehr mächtiges Werkzeug und seine Konfiguration 
+kann stark variieren, abhängig von Ihren spezifischen Anforderungen.
+
+Bitte beachten Sie, dass diese Konfiguration möglicherweise nicht Ihren genauen Anforderungen entspricht und 
+angepasst werden muss, um Ihre spezifischen Bedürfnisse zu erfüllen. Es wird auch empfohlen, die Traefik-Dokumentation zu lesen 
+und zu verstehen, bevor Sie sie in Ihrer Produktionsumgebung implementieren.
+
+
+
