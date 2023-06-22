@@ -261,8 +261,8 @@ services:
 ##################################################################################################
 
 
-
-
+Diese Version hier 👇👇 funktioniert einwandfrei. Die verwenden funktioniert immer im Cluster
+Achtung container wachtower startet nur wenn es was zum aktualisieren gibt. 
 
 ### Schlicht und einfache Version ##############
 
@@ -285,6 +285,63 @@ services:
 
 
 ##################################################################################################
+
+
+Das Watchtower im Gleichen Netzwerk ist wie portainer und der nginx proxy, ist das 
+die Anpassung des Codes. 
+
+## Watchtower Stack 
+läuft aber eher als Service: 
+
+Der von Ihnen bereitgestellte Watchtower-Stack scheint korrekt zu sein, 
+erfordert jedoch einige Anpassungen, um sicherzustellen, dass er im Netzwerk gut funktioniert 
+und mit dem Nginx-Proxy-Manager und Portainer kommunizieren kann. Hier ist die modifizierte Version:
+
+
+
+#########################################
+
+
+version: '3.5'
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 */3 * * *" --cleanup --include-stopped
+    networks:
+      - mynetwork
+    deploy:
+      mode: global
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=259200
+
+networks:
+  mynetwork:
+    external: true
+
+
+Achten Sie darauf, dass Sie 'mynetwork' durch den tatsächlichen Namen des Netzwerks ersetzen, das Sie verwenden.
+
+Zum Starten des Watchtower-Stacks führen Sie den Befehl docker stack deploy -c watchtower-stack.yml watchtower aus, 
+wobei "watchtower-stack.yml" der Name der Datei ist, in der Sie diesen Stack gespeichert haben.
+
+Wie bereits erwähnt, sollten Sie sicherstellen, dass alle Ihre Dienste im selben Netzwerk sind, um sicherzustellen, 
+dass sie miteinander kommunizieren können. Achten Sie auch darauf, dass Sie den Nginx-Proxy-Manager richtig konfiguriert 
+haben, um eingehende Anfragen an die richtigen Dienste weiterzuleiten.
+
+
+
+##############################################
+
+
+
+
+
+
+
 
 
 
