@@ -246,6 +246,141 @@ networks:
 #############################################################
 #############################################################
 
+## In meinem Raspberry Pi Cluster 
+
+## Verbesserung Oatuh2 Proxy  mit Nginx Proxy Manager & OAuth2-Proxy & Portainer 
+
+
+## Anleitung 
+Hier ist der angepasste OAuth2-Proxy Docker Stack. 
+Beachten Sie, dass Sie den Pfad zu Ihrer oauth2_proxy.cfg und 
+andere relevante Pfade ersetzen müssen:
+
+
+```
+
+version: '3.2'
+services: 
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    hostname: oauth2-proxy 
+    volumes:
+      - /path/to/oauth2:/config
+    command: --config=/config/oauth2_proxy.cfg
+    networks:
+      - oauth2-proxy-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.18
+    ports:
+      - 80:80/tcp
+    hostname: nginx
+    volumes:
+      - /path/to/your/config.json:/app/config/production.json
+      - /path/to/your/data:/data
+      - /path/to/your/letsencrypt:/etc/letsencrypt
+    networks:
+      - oauth2-proxy-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  oauth2-proxy-network: 
+    driver: overlay
+    attachable: true
+
+
+```
+
+#### Verbesserung wegen Port da es nicht funktioniert hat 
+
+## Ist ein Update des Stacks für den oauth2-proxy
+
+```
+
+version: '3'
+services: 
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    hostname: oauth2-proxy 
+    volumes:
+      - /path/to/oauth2:/config
+    command: --config=/config/oauth2_proxy.cfg
+    networks:
+      oauth2-proxy: {}
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+  nginx:
+    image: nginx:1.18
+    ports:
+      - 8080:80 # Hier wurde der Port geändert
+    hostname: nginx
+    volumes:
+      - /path/to/your/config.json:/app/config/production.json
+      - /path/to/your/data:/data
+      - /path/to/your/letsencrypt:/etc/letsencrypt
+    networks:
+      oauth2-proxy: {}
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+networks:
+  oauth2-proxy: {}  
+
+
+```
+
+In diesem Beispiel wurde der Port für den nginx-Service auf 8080:80 geändert. 
+Bitte denken Sie daran, dass Sie alle Verweise auf den oauth2-proxy-Dienst aktualisieren 
+müssen, um den neuen Port 8080 zu verwenden.
+
+
+### Komentar mit der änderung ist im stack drin beschrieben. 
+
+
+```
+
+## Only Text ! 
+
+```
+
+
+
+
+############################################################# 
+
+
+Bitte stellen Sie sicher, dass Sie die Pfade zu Ihren Konfigurationen 
+und Daten ändern (/path/to/oauth2, /path/to/your/config.json, /path/to/your/data, 
+und /path/to/your/letsencrypt) mit den 
+tatsächlichen Pfaden, wo diese Dateien in Ihrem System gespeichert sind.
+
+## Sie können diesen Stack dann mithilfe von Portainer oder über die 
+Docker CLI mit folgendem Befehl bereitstellen:
+
+
+```
+
+docker stack deploy -c /path/to/oauth2-proxy-stack.yml oauth2-proxy
+
+```
+
+## Ersetzen Sie /path/to/oauth2-proxy-stack.yml durch den tatsächlichen Pfad zur Stack-Konfigurationsdatei.
+
 
 
 
