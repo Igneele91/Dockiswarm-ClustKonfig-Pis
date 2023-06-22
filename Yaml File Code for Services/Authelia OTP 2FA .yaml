@@ -1,0 +1,254 @@
+
+###################################################
+
+
+
+**Schritt 1: Netzwerke erstellen**
+
+Erstelle zuerst zwei Netzwerke namens `web` und `authelia` in Docker. Du kannst dies entweder über die Portainer-Oberfläche machen oder über die Kommandozeile mit den Befehlen:
+
+```
+docker network create web
+docker network create authelia
+```
+
+**Schritt 2: Docker-Compose-Datei erstellen**
+
+Erstelle nun eine `docker-compose.yml`-Datei. In dieser Datei werden die Dienste definiert, die in deinem Cluster laufen sollen. Im Fall von Authelia wären das der Authelia-Dienst selbst und ein Redis-Dienst, der von Authelia zur Speicherung von Sitzungsdaten genutzt wird.
+
+Die `docker-compose.yml`-Datei könnte so aussehen:
+
+```yaml
+version: '3'
+services:
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    networks:
+      - web
+      - authelia
+    volumes:
+      - /path/to/config:/config:rw
+      - /path/to/data:/var/lib/authelia:rw
+    environment:
+      - TZ=Europe/Berlin
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    networks:
+      - authelia
+
+networks:
+  web:
+    external: true
+  authelia:
+    external: true
+```
+
+Ersetze `/path/to/config` und `/path/to/data` durch die Pfade auf deinem System, wo die Konfigurationsdateien und die Daten für Authelia gespeichert werden sollen.
+
+**Schritt 3: Authelia-Konfigurationsdatei erstellen**
+
+Erstelle im Pfad, den du in Schritt 2 definiert hast (`/path/to/config`), eine Datei namens `configuration.yml`. In dieser Datei wird die Konfiguration von Authelia definiert. Hier ein Beispiel für die minimale Konfiguration für die OTP-Authentifizierung:
+
+```yaml
+host: 0.0.0.0
+port: 9091
+log_level: info
+jwt_secret: dein-jwt-geheimnis
+default_redirection_url: https://auth.deinedomain.com
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+```
+
+Ersetze `dein-jwt-geheimnis` und `https://auth.deinedomain.com` durch passende Werte. Das jwt_secret sollte ein sicherer, zufälliger String sein, und die default_redirection_url sollte die URL sein, auf die Benutzer weitergeleitet werden, wenn sie versuchen, auf einen geschützten Dienst zuzugreifen, ohne angemeldet zu sein.
+
+**Schritt 4: Dienste starten**
+
+Nun kannst du die Dienste starten. Wenn du die Docker-Compose-Datei in Portainer als Stack einfügst, werden die Dienste automatisch gestartet. Du kannst das auch manuell von der Kommandozeile mit dem Befehl `docker-compose up -d` machen, wenn du dich im selben Verzeichnis wie die Docker-Compose-Datei befindest.
+
+**Schritt 5: OTP einrichten**
+
+Die Einrichtung der OTP-Auth
+
+entifizierung erfolgt auf Seiten des Benutzers. Jeder Benutzer muss eine OTP-Anwendung auf seinem Gerät installieren (wie z.B. Google Authenticator oder Authy) und dann einen QR-Code scannen, der von Authelia generiert wird, wenn sie sich das erste Mal anmelden. Nach dem Scannen generiert die App ein Einmalpasswort alle 30 Sekunden (wie in der Konfigurationsdatei definiert), das der Benutzer eingeben muss, um sich anzumelden.
+
+**Schritt 6: Dienste mit Authelia schützen**
+
+Um einen Dienst mit Authelia zu schützen, musst du den Reverse-Proxy so konfigurieren, dass er Authelia für Authentifizierungsanfragen nutzt. Dies kann in der Konfigurationsdatei des Reverse-Proxys erfolgen, nicht in der Docker-Compose-Datei oder der Authelia-Konfigurationsdatei.
+
+Wenn du z.B. NGINX als Reverse-Proxy verwendest, könnte die Konfiguration für einen geschützten Dienst so aussehen:
+
+```nginx
+location / {
+    proxy_pass http://dein-dienst:port;
+    include /etc/nginx/proxy_params;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $http_host;
+    auth_request /authelia;
+    error_page 401 =302 https://auth.deinedomain.com/?rd=$scheme://$http_host$request_uri;
+}
+
+location /authelia {
+    internal;
+    proxy_pass http://authelia:9091/api/verify;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $http_host;
+}
+```
+
+Ersetze `http://dein-dienst:port` durch die URL und den Port deines Dienstes und `https://auth.deinedomain.com` durch die URL deiner Authelia-Instanz.
+
+Diese Schritte sollten dir einen guten Start mit Authelia geben. Wenn du Hilfe bei spezifischeren Anforderungen benötigst, lass es mich wissen!
+
+
+
+#############################################
+
+
+## Neu 
+
+
+
+
+Ja, ich habe deine Anforderungen verstanden und ich werde sie in meine detaillierte Anleitung einbeziehen. Hier ist der Schritt-für-Schritt-Prozess, einschließlich der benötigten Code-Beispiele.
+
+**Schritt 1: Erstellen der Docker-Netzwerke**
+
+Gehe zu Portainer in deinem Webbrowser:
+
+1. Klicke auf "Netzwerke" in der linken Seitenleiste.
+2. Klicke auf "Netzwerk hinzufügen".
+3. Gib "web" als Netzwerkname ein und klicke auf "Erstellen".
+4. Wiederhole den Vorgang für das Netzwerk "authelia".
+
+**Schritt 2: Docker-Compose-Datei erstellen**
+
+Erstelle auf deinem Docker-Host eine Datei namens `docker-compose.yml` mit folgendem Inhalt (ersetze `/path/to/config` und `/path/to/data` durch die Pfade auf deinem System, wo du die Authelia-Konfigurations- und Datenverzeichnisse speichern möchtest):
+
+```yaml
+version: "3.3"
+services:
+  authelia:
+    image: authelia/authelia
+    volumes:
+      - /path/to/config:/config:ro
+      - /path/to/data:/data:rw
+    networks:
+      - authelia
+      - web
+    labels:
+      - "traefik.backend=authelia"
+      - "traefik.frontend.rule=Host:auth.example.com"
+      - "traefik.port=9091"
+networks:
+  authelia:
+    external: true
+  web:
+    external: true
+```
+
+**Schritt 3: Authelia-Konfigurationsdatei erstellen**
+
+Erstelle im Pfad `/path/to/config` eine Datei namens `configuration.yml` mit folgendem Inhalt:
+
+```yaml
+host: 0.0.0.0
+port: 9091
+logs_level: debug
+jwt_secret: a_very_important_secret
+default_redirection_url: http://localhost:8080
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+authentication_backend:
+  disable_reset_password: false
+  refresh_interval: 5m
+access_control:
+  default_policy: deny
+  rules:
+    - domain: traefik.example.com
+      policy: two_factor
+session:
+  name: authelia_session
+  secret: another_very_important_secret
+  expiration: 1h
+  inactivity: 5m
+  domain: example.com
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+storage:
+  local:
+    path: /path/to/data
+notifier:
+  smtp:
+    username: you@example.com
+    password: password
+    host: smtp.example.com
+    port: 587
+    sender: authelia@example.com
+```
+
+Ersetze die entsprechenden Werte, insbesondere die "jwt_secret", "session.secret" und "notifier.smtp" Werte mit deinen eigenen.
+
+**Schritt 4: Docker-Dienste starten**
+
+Gehe zu Portainer und folge diesen Schritten, um deinen Stack zu erstellen:
+
+1. Klicke auf "Stacks" in der linken Seitenleiste.
+2. Klicke auf "Neuen Stack hinzufügen".
+3. Gib deinem Stack einen Namen.
+4. Füge den Inhalt der `docker-compose.yml`-Date
+
+i in das "Web-Editor"-Feld ein.
+5. Klicke auf "Erstellen".
+
+
+**Schritt 5: Konfigurieren Sie Nginx Proxy Manager und Portainer für die Verwendung von Authelia**
+
+Nun musst du deinen Nginx Proxy Manager und Portainer so konfigurieren, dass sie Authelia als Authentifizierungsmethode verwenden.
+
+Für den Nginx Proxy Manager:
+
+1. Öffne den Nginx Proxy Manager in deinem Webbrowser.
+2. Klicke auf die Proxy-Hosts in der linken Seitenleiste.
+3. Klicke auf den Proxy-Host, den du schützen möchtest.
+4. Klicke auf die Registerkarte "Erweitert".
+5. Füge folgenden Text in das Feld "Benutzerdefinierte Nginx-Konfiguration" ein:
+
+```nginx
+location /authelia {
+    set $upstream_authelia authelia;
+    proxy_pass http://$upstream_authelia:9091;
+    include /config/nginx/proxy.conf;
+}
+```
+
+Für Portainer:
+
+Folge den gleichen Schritten wie für den Nginx Proxy Manager, aber verwende statt `location /authelia` `location /portainer` und ersetze `$upstream_authelia authelia;` durch `$upstream_authelia portainer;`.
+
+**Schritt 6: Testen Sie die Konfiguration**
+
+Nun sollte alles bereit sein. Du kannst testen, ob die Authentifizierung funktioniert, indem du auf deine Nginx Proxy Manager und Portainer URLs gehst. Du solltest aufgefordert werden, dich mit deinem Authelia-Konto anzumelden. Wenn das funktioniert, ist die Konfiguration korrekt und du hast eine zusätzliche Sicherheitsebene für deine Dienste hinzugefügt.
+
+Bitte beachte, dass du den genauen Ablauf in deinem spezifischen Kontext anpassen musst, insbesondere die Domänen und spezifischen Host-Einstellungen. Darüber hinaus könnten die oben genannten Anweisungen in Zukunft durch Änderungen an den jeweiligen Produkten (Authelia, Portainer, Nginx Proxy Manager) leicht veraltet sein. 
+
+Falls du auf Schwierigkeiten stößt oder Hilfe benötigst, stehe ich dir gerne zur Verfügung!
+
+
+
+
+
+
