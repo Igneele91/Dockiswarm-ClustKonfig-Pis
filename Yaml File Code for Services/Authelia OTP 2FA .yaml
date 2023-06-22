@@ -237,15 +237,148 @@ location /authelia {
 
 Für Portainer:
 
-Folge den gleichen Schritten wie für den Nginx Proxy Manager, aber verwende statt `location /authelia` `location /portainer` und ersetze `$upstream_authelia authelia;` durch `$upstream_authelia portainer;`.
+Folge den gleichen Schritten wie für den Nginx Proxy Manager, aber 
+verwende statt `location /authelia` `location /portainer` und 
+ersetze `$upstream_authelia authelia;` durch `$upstream_authelia portainer;`.
+
+
 
 **Schritt 6: Testen Sie die Konfiguration**
 
-Nun sollte alles bereit sein. Du kannst testen, ob die Authentifizierung funktioniert, indem du auf deine Nginx Proxy Manager und Portainer URLs gehst. Du solltest aufgefordert werden, dich mit deinem Authelia-Konto anzumelden. Wenn das funktioniert, ist die Konfiguration korrekt und du hast eine zusätzliche Sicherheitsebene für deine Dienste hinzugefügt.
+Nun sollte alles bereit sein. Du kannst testen, ob die Authentifizierung funktioniert, 
+indem du auf deine Nginx Proxy Manager und Portainer URLs gehst. Du solltest aufgefordert werden, 
+dich mit deinem Authelia-Konto anzumelden. Wenn das funktioniert, ist die Konfiguration korrekt und du 
+hast eine zusätzliche Sicherheitsebene für deine Dienste hinzugefügt.
 
-Bitte beachte, dass du den genauen Ablauf in deinem spezifischen Kontext anpassen musst, insbesondere die Domänen und spezifischen Host-Einstellungen. Darüber hinaus könnten die oben genannten Anweisungen in Zukunft durch Änderungen an den jeweiligen Produkten (Authelia, Portainer, Nginx Proxy Manager) leicht veraltet sein. 
+Bitte beachte, dass du den genauen Ablauf in deinem spezifischen Kontext anpassen musst, 
+insbesondere die Domänen und spezifischen Host-Einstellungen. Darüber hinaus könnten die oben genannten Anweisungen 
+in Zukunft durch Änderungen an den jeweiligen Produkten (Authelia, Portainer, Nginx Proxy Manager) leicht veraltet sein. 
 
 Falls du auf Schwierigkeiten stößt oder Hilfe benötigst, stehe ich dir gerne zur Verfügung!
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+Mit Traefik Labels! 
+
+############## 
+
+Authelia Stack:
+
+Wir haben auch geplant, Authelia zu integrieren, 
+indem wir es an dasselbe Netzwerk anbinden und es in die Infrastruktur von Traefik integrieren. 
+Hier ist der Code, den wir vorgeschlagen haben:
+
+
+version: '3.8'
+services:
+  authelia:
+    image: authelia/authelia:latest
+    networks:
+      - mynetwork
+    volumes:
+      - /path/to/authelia/config:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.example.com"
+      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User, Remote-Groups"
+      - "traefik.http.routers.authelia.rule=Host(`auth.example.com`)"
+
+networks:
+  mynetwork:
+    external: true
+
+
+
+
+
+
+Anmerkung: 
+Ersetzen Sie "/path/to/authelia/config" mit dem tatsächlichen Pfad zu Ihrer Authelia-Konfiguration 
+und ersetzen Sie "auth.example.com" mit der tatsächlichen Domain, die Sie für Authelia verwenden.
+
+
+
+
+
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+
+Im Cluster verwendet. 
+
+################ 
+
+No Traefik Labels drin! 
+
+################
+
+Hier ist der aktualisierte Authelia-Stack, der den Pfad zu 
+Ihrer Authelia-Konfiguration und Daten berücksichtigt:
+
+```
+
+version: '3.9'
+services:
+  authelia:
+    image: authelia/authelia:latest
+    networks:
+      - mynetwork
+    volumes:
+      - /home/pi/authelia/config:/config
+      - /home/pi/authelia/data:/data
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+networks:
+  mynetwork:
+    external: true
+
+
+```
+
+In diesem Stack wird Authelia so konfiguriert, dass es auf die Konfigurationsdateien 
+in "/home/pi/authelia/config" und die Daten in "/home/pi/authelia/data" zugreifen kann. 
+
+Beide Pfade werden in den Container gemountet, damit Authelia sie verwenden kann.
+
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+
+
+
+
+
+
 
 
 

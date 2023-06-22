@@ -1,0 +1,225 @@
+
+
+Portainer Stack:
+
+Für Portainer waren die Änderungen, die wir machen wollten, ähnlich. 
+Wir wollten es an das gleiche Netzwerk anbinden und es in die Traefik und Authelia Infrastruktur integrieren. 
+Hier ist der Code, den wir vorgeschlagen haben:
+
+
+Mit Traefik Labels 
+
+## Mit Traefik Stack Konfiguration #### 
+
+```
+
+version: '3.2'
+services:
+  agent:
+    image: portainer/agent:2.18.3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - mynetwork
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer-ee:2.18.3
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - "9443:9443"
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - portainer_data:/data
+    networks:
+      - mynetwork
+    labels:
+      - "traefik.http.routers.portainer.rule=Host(`portainer.quinismini.com`)"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.middlewares=authelia@docker"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  mynetwork:
+    external: true
+
+volumes:
+  portainer_data:
+
+
+```
+
+######################## nur verwenden wenn Treafik der Proxy Manager ist. #######################
+
+
+
+################
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+### Das ist der neue Stack ohne Treafik sondern nur für den Nginx Proxy Manager als Reverse Proxy ################ 
+
+Verwende ich zurzeit in Cluster selbst! 
+
+###### 
+
+
+No Traefik drin! 👇👇👇
+
+################# Neuer Portainer Stack ############# 
+
+Hier ist der aktualisierte Portainer-Stack, der nun das 
+gleiche Netzwerk ("mynetwork") wie der Nginx Proxy Manager und Authelia verwendet:
+
+
+```
+
+version: '3.9'
+
+services:
+  agent:
+    image: portainer/agent:2.18.3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - mynetwork
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer-ee:2.18.3
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - "9443:9443"
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - portainer_data:/data
+    networks:
+      - mynetwork
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  mynetwork:
+    external: true
+
+volumes:
+  portainer_data:
+
+
+```
+## Tipp ##########
+
+
+Um einen Stack direkt zu aktualisieren, können Sie tatsächlich den Befehl 
+docker stack deploy mit der aktualisierten YAML-Datei verwenden, wie ich es bereits vorgeschlagen habe. 
+Docker erkennt die Änderungen in der YAML-Datei und aktualisiert die Dienste im Stack entsprechend.
+
+
+##### Befehl ######
+
+```
+
+docker stack deploy -c portainer-stack.yml portainer
+
+```
+
+Docker wird den Stack analysieren und sehen, dass sich die Konfiguration geändert hat. 
+Es wird dann ein Rolling-Update durchführen, bei dem die aktualisierten Services der Reihe nach neu gestartet werden. 
+Dabei wird darauf geachtet, dass der Betrieb möglichst wenig beeinträchtigt wird.
+
+Bitte beachten Sie, dass nicht alle Änderungen in der Stack-Konfiguration ein Rolling-Update auslösen. 
+Manchmal kann es notwendig sein, die Dienste oder den gesamten Stack manuell neu zu starten. 
+In diesem Fall könnten Sie den Stack mit docker stack rm entfernen und dann erneut mit docker stack deploy starten. 
+Aber beachten Sie, dass dabei alle laufenden Dienste des Stacks gestoppt werden.
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+
+## Backup Portainer 
+
+Das Backup von der Portainer Version die läuft aber nich angepasst ist!
+
+#### Portainer mit falscher netzwerk 
+
+version: '3.2'
+
+services:
+  agent:
+    image: portainer/agent:2.18.3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - agent_network
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer-ee:2.18.3
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - "9443:9443"
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - portainer_data:/data
+    networks:
+      - agent_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  agent_network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  portainer_data:
+
+
+## Backup fertig !
+
+#################################################################################
+#################################################################################
+#################################################################################
+
+
+
+
+
+
+

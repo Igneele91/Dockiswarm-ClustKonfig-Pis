@@ -625,28 +625,176 @@ services:
 networks:
   mynetwork:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ################## Ende der Anleitung die Ich in meinem Fall verwendet habe. ###############################################
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+
+
+############## Nginx Revers Proxy mit Autehlia Netzwerk ############################### 
+
+### Dieser Stack ist mit der intergration mit dem Trafik Stack 
+###  Durch die Labels 
+
+
+Nginx Proxy Manager-Änderungen: 
+# Wir haben die Nginx Proxy Manager-Konfiguration aktualisiert, um ein spezifisches Netzwerk zu verwenden 
+# und sicherzustellen, dass der Dienst korrekt gestartet wird. Diese Änderungen umfassten auch das Hinzufügen 
+# von Umgebungsvariablen und Labels, um Authelia zu integrieren und den Dienst über Traefik verfügbar zu machen.
+
+
+version: '3.9'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    networks:
+      - mynetwork
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - /home/pi/nginx-proxy-config.json:/app/config/production.json
+      - /home/pi/data:/data
+      - /home/pi/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.npm.rule=Host(`npm.your-domain.com`)"
+      - "traefik.http.routers.npm.tls=true"
+      - "traefik.http.routers.npm.tls.certresolver=le"
+      - "traefik.http.routers.npm.middlewares=authelia@docker"
+
+  db:
+    image: 'jc21/mariadb-aria:10.4'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /home/pi/data/mysql:/var/lib/mysql
+    restart: unless-stopped
+
+networks:
+  mynetwork:
+    external: true
+
+
+
+##############################   Finish #######################  
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+Verwende ich im Cluster
+
+######## Nginx Proxy Manager ohne Traefik ############### 
+
+No Traefik No 
+
+
+## Entschuldigen Sie bitte für jegliche Unstimmigkeiten. 
+## Lassen Sie uns den 
+Nginx Proxy Manager Stack anpassen: 
+
+version: '3.9'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    networks:
+      - mynetwork
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - /home/pi/nginx-proxy-config.json:/app/config/production.json
+      - /home/pi/data:/data
+      - /home/pi/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: 'jc21/mariadb-aria:10.4'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /home/pi/data/mysql:/var/lib/mysql
+    networks:
+      - mynetwork
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+networks:
+  mynetwork:
+    external: true
+
+
+Dieser angepasste Stack enthält jetzt "restart_policy" unter dem "deploy" Abschnitt sowohl 
+für den "app" als auch für den "db" Service und die Netzwerkzuweisung ist im korrekten Abschnitt. 
+
+
+
+
+
+
+
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+##############################################################################################################################################################################
+
+
+
+
+
+
+
+
 
 
 

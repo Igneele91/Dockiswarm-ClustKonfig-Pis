@@ -140,8 +140,9 @@ services:
 
 
 
+## Verbesserung V3 
 
-# Das es im selben netzwerk ist verbesserung mir Duck DNS: 
+Das es im selben netzwerk ist verbesserung mir Duck DNS: 
 
 
 
@@ -166,6 +167,72 @@ services:
 
 networks:
   mynetwork:
+
+
+
+
+############################################# 
+############################################# 
+############################################# 
+
+
+
+Ihr DuckDNS-Stack ist so konfiguriert, dass er im gleichen Netzwerk ("mynetwork") ausgeführt wird, wie die anderen 
+Services (Nginx Proxy Manager und Portainer), die wir bisher betrachtet haben. 
+Das ist sehr gut, da es die Kommunikation und Interaktion zwischen den Services erleichtert.
+
+Es sieht so aus, als ob Ihr DuckDNS-Stack richtig konfiguriert ist. 
+Er hat Umgebungsvariablen für die Zeitzone, Subdomains und Token, was typisch für einen DuckDNS-Service ist. 
+Außerdem hat er eine Deploy-Konfiguration, die sicherstellt, dass der Service nach einem Fehler automatisch 
+neu gestartet wird und dass er auf einem Manager-Knoten läuft.
+
+
+
+### Diesen Duck DNS Stack verwende ich in meinem CLuster
+
+Hier 👇👇👇👍👍
+
+
+Hier ist Ihr Stack mit minimalen Änderungen:
+
+
+
+version: '3.3'
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    networks:
+      - mynetwork
+    environment:
+      - TZ=Europe/Berlin
+      - SUBDOMAINS=router-quinisimini,portainer-quinisimini,nginxproxy-quinisimini
+      - TOKEN=5e214ed4-8cce-492b-8838-2d838be00c84
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  mynetwork:
+    external: true
+
+
+
+Der einzige Unterschied ist, dass ich "external: true" zu "mynetwork" hinzugefügt habe, 
+da ich davon ausgehe, dass dieses Netzwerk bereits vor dem Ausführen dieses Stacks erstellt wurde.
+
+
+
+
+
+
+
+
+
 
 
 
