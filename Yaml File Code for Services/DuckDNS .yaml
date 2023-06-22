@@ -141,4 +141,33 @@ services:
 
 
 
+# Das es im selben netzwerk ist verbesserung mir Duck DNS: 
+
+
+
+version: '3.3'
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    networks:
+      - mynetwork
+    environment:
+      - TZ=Europe/Berlin
+      - SUBDOMAINS=router-quinisimini,portainer-quinisimini,nginxproxy-quinisimini
+      - TOKEN=5e214ed4-8cce-492b-8838-2d838be00c84
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  mynetwork:
+
+
+
+
 

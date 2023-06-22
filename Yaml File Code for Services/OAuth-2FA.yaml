@@ -100,9 +100,9 @@ docker service create --name oauth2-proxy --network webproxy
         networks:
           - webproxy
 
-    networks:
-      webproxy:
-        external: true
+      networks:
+        webproxy:
+          external: true
 
 
 
@@ -202,3 +202,40 @@ networks:
 
 
 #############################################
+
+
+
+version: '3'
+services: 
+    oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    hostname: oauth2-proxy 
+    volumes:
+      - /path/to/oauth2:/config
+        command: --config=/config/oauth2_proxy.cfg
+    networks:
+      oauth2-proxy: {}
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+  nginx:
+    container_name: nginx
+    image: nginx:1.18
+    ports:
+      - 80:80/tcp
+    hostname: nginx
+    volumes:
+          - /path/to/your/config.json:/app/config/production.json
+          - /path/to/your/data:/data
+          - /path/to/your/letsencrypt:/etc/letsencrypt
+    networks:
+      oauth2-proxy: {}
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+networks:
+  oauth2-proxy: {}  
