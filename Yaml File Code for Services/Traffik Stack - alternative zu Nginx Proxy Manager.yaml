@@ -63,3 +63,35 @@ und zu verstehen, bevor Sie sie in Ihrer Produktionsumgebung implementieren.
 
 
 
+################## Beachten ##########
+
+
+Der NGINX Proxy Manager ist ein Open-Source-Projekt, das eine webbasierte Benutzeroberfläche 
+bereitstellt, um Reverse-Proxy-, SSL-Zertifikat- und Zugriffskontrollregeln in einer NGINX-Umgebung zu verwalten. 
+Er ermöglicht es Ihnen, den Datenverkehr zu Ihren Anwendungen zu leiten, die Sicherheit mit SSL-Zertifikaten zu 
+erhöhen und Zugriffssteuerungsregeln zu definieren.
+
+Im Kontext Ihres Docker Swarm Clusters können Sie den NGINX Proxy Manager verwenden, um den Verkehr zu 
+Ihren Diensten basierend auf dem Hostnamen (z.B. subdomain.yourdomain.com) oder dem Pfad (z.B. yourdomain.com/myapp) zu routen. 
+Sie können auch SSL-Zertifikate für Ihre Domains mit Let's Encrypt direkt aus der Benutzeroberfläche des NGINX Proxy Managers anfordern und erneuern.
+
+Die grundlegende Nutzung des NGINX Proxy Manager beinhaltet im Allgemeinen die folgenden Schritte:
+
+1. Einrichten und Starten des NGINX Proxy Manager-Dienstes in Ihrem Docker Swarm Cluster. Dies umfasst in der Regel die Bereitstellung 
+eines Docker-Stacks, der den NGINX Proxy Manager, eine Datenbank (normalerweise MariaDB oder MySQL) und alle benötigten Volumes und Netzwerke enthält.
+
+2. Anmelden am NGINX Proxy Manager über die webbasierte Benutzeroberfläche (standardmäßig verfügbar auf Port 81).
+
+3. Hinzufügen von Proxy-Hosts in der NGINX Proxy Manager-Oberfläche. Jeder Proxy-Host repräsentiert eine Regel, 
+die eingehenden Verkehr basierend auf dem Hostnamen oder Pfad an einen Ihrer Dienste weiterleitet. Beim Hinzufügen eines Proxy-Hosts können 
+Sie auch SSL-Zertifikate anfordern und erneuern und Zugriffssteuerungsregeln definieren.
+
+Bitte beachten Sie, dass sowohl Traefik als auch der NGINX Proxy Manager ähnliche Funktionen bieten und Sie in den 
+meisten Fällen nicht beide gleichzeitig in der gleichen Umgebung benötigen. Beide Tools ermöglichen es Ihnen, den Verkehr zu Ihren Diensten zu 
+routen und SSL-Zertifikate zu verwalten. Die Wahl zwischen den beiden hängt in erster Linie von Ihren spezifischen 
+Anforderungen und Ihrer Vertrautheit mit den jeweiligen Tools ab.
+
+
+
+
+
