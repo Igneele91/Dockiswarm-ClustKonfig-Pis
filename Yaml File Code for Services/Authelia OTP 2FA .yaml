@@ -356,6 +356,7 @@ networks:
     external: true
 
 
+
 ```
 
 In diesem Stack wird Authelia so konfiguriert, dass es auf die Konfigurationsdateien 
@@ -373,6 +374,11 @@ Beide Pfade werden in den Container gemountet, damit Authelia sie verwenden kann
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
 
+
+
+Neue Konfiguration mit der DUO API drin 
+
+## Configuration File 
 
 
 
