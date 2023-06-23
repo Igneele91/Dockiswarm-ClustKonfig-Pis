@@ -382,12 +382,128 @@ Neue Konfiguration mit der DUO API drin
 
 
 
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: debug
+
+jwt_secret: a_very_important_secret
+
+default_redirection_url: http://localhost:8080
+
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+
+authentication_backend:
+  file:
+    path: /path/to/users_database.yml
+
+access_control:
+  default_policy: two_factor
+  rules:
+    - domain: traefik.example.com
+      policy: two_factor
+
+session:
+  name: authelia_session
+  secret: CjwsZMOJ9xM+j0CkLC7dzGGse3+ofGNu22Npl7kSRjY=
+  expiration: 1h
+  inactivity: 5m
+  domain: example.com
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  local:
+    path: /home/pi/authelia/data
+
+notifier:
+  smtp:
+    username: you@example.com
+    password: password
+    host: smtp.example.com
+    port: 587
+    sender: authelia@example.com
+
+duo_api:
+  hostname: api-123456789.example.com
+  integration_key: DIXXXXXXXXXXXXXXXXXX
+  secret_key: deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
 
 
 
 
+oder ohne duo api
 
 
+#########  
+
+
+### Ohne die Duo App Code configuration drin 
+
+
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: debug
+
+jwt_secret: a_very_important_secret
+default_redirection_url: http://localhost:8080
+
+totp:
+  issuer: authelia.com
+  period: 30
+  skew: 1
+
+authentication_backend:
+  disable_reset_password: false
+  file:
+    path: /path/to/users_database.yml
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: traefik.example.com
+      policy: two_factor
+
+session:
+  name: authelia_session
+  secret: CjwsZMOJ9xM+j0CkLC7dzGGse3+ofGNu22Npl7kSRjY=
+  expiration: 1h
+  inactivity: 5m
+  domain: example.com
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  local:
+    path: /home/pi/authelia/data
+    encryption_key: CjwsZMOJ9xM+j0CkLC7dzGGse3+ofGNu22Npl7kSRjY=
+
+notifier:
+  smtp:
+    username: you@example.com
+    password: password
+    host: smtp.example.com
+    port: 587
+    sender: authelia@example.com
+
+
+
+
+############################################
 
 
 
