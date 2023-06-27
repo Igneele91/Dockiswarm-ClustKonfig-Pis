@@ -507,3 +507,64 @@ notifier:
 
 
 
+
+### Konsole Ausgabe Raspi-1 
+
+
+
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $ tree
+.
+├── authelia
+│   ├── config
+│   │   ├── configuration.yml
+│   │   ├── configuration.yml.save
+│   │   └── users_database.yml
+│   └── data
+├── get-docker.sh
+├── nginx-proxy-manager
+│   ├── config
+│   ├── data
+│   │   ├── access
+│   │   ├── custom_ssl
+│   │   ├── keys.json
+│   │   ├── letsencrypt-acme-challenge
+│   │   ├── logs
+│   │   │   ├── fallback_access.log
+│   │   │   └── fallback_error.log
+│   │   └── nginx
+│   │       ├── dead_host
+│   │       ├── default_host
+│   │       ├── default_www
+│   │       ├── proxy_host
+│   │       ├── redirection_host
+│   │       ├── stream
+│   │       └── temp
+│   ├── letsencrypt
+│   │   └── renewal-hooks
+│   │       ├── deploy
+│   │       ├── post
+│   │       └── pre
+│   ├── mysql
+│   │   ├── aria_log.00000001
+│   │   ├── aria_log_control
+│   │   ├── ef928b2db063.pid
+│   │   ├── multi-master.info
+│   │   ├── mysql [error opening dir]
+│   │   ├── npm [error opening dir]
+│   │   └── performance_schema [error opening dir]
+│   └── nginx-proxy-config.json
+└── portainer-agent-stack.yml
+
+27 directories, 13 files
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
+
+
+
+
+
+### Konsole Ausgabe Raspi-1 Ende ###########
+

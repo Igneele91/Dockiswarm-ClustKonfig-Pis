@@ -226,14 +226,42 @@ Der einzige Unterschied ist, dass ich "external: true" zu "mynetwork" hinzugefü
 da ich davon ausgehe, dass dieses Netzwerk bereits vor dem Ausführen dieses Stacks erstellt wurde.
 
 
+#########################################
+#########################################
+#########################################
+
+
+## Neue Version updatet. 
+
+Neuer Stack Duck DNS ab 27 Juni 2023
 
 
 
+version: '3.3'
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    networks:
+      - mynetwork
+    environment:
+      - TZ=Europe/Berlin
+      - SUBDOMAINS=quinisimini
+      - TOKEN=5e214ed4-8cce-492b-8838-2d838be00c84
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  mynetwork:
+    external: true
 
 
-
-
-
+#######################################################
 
 
 
