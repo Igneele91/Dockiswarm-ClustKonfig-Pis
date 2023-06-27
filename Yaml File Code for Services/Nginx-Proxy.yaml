@@ -456,6 +456,7 @@ services:
 Docker Stack-Code (nginx-proxy-manager.yml):
 
 ```yaml
+
 version: '3.9'
 services:
   app:
@@ -504,6 +505,7 @@ services:
           - node.role == manager
       restart_policy:
         condition: on-failure
+        
 ```
 
 Anleitung:
@@ -789,9 +791,6 @@ für den "app" als auch für den "db" Service und die Netzwerkzuweisung ist im k
 
 
 
-
-
-
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
@@ -799,13 +798,155 @@ für den "app" als auch für den "db" Service und die Netzwerkzuweisung ist im k
 ##############################################################################################################################################################################
 
 
+Der Neue stack mit den Richtigem Pfad.
+
+
+
+### Habe eine neue sauberere strukutr auf dem Node 1 gemacht und daher, 
+
+### alle files und dateien in einen ordner getan so das es eine Ordner gibt
+
+mit der ganzen Files und dateien vom Nginx Proxy Manager. 
+
+
+#######################
+
+
+starten des stack auf der cli: 
+
+```
+
+docker stack deploy -c docker-compose.yml nginx-proxy
+
+```
+
+
+
+###################################
+
+
+Stack neu Nginx Proxy Sauber struktur: 
+
+
+version: '3.9'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    networks:
+      - mynetwork
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - /home/pi/nginx-proxy-manager/nginx-proxy-config.json:/app/config/production.json
+      - /home/pi/nginx-proxy-manager/data:/data
+      - /home/pi/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /home/pi/nginx-proxy-manager/mysql:/var/lib/mysql
+    networks:
+      - mynetwork
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+networks:
+  mynetwork:
+    external: true 
+
+
+
+
+############################### 
 
 
 
 
 
+Tree Übersicht zuletzt. in Raspi-1 
+
+
+### Konsolle
+
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $ tree
+.
+├── authelia
+│   ├── config
+│   │   ├── configuration.yml
+│   │   ├── configuration.yml.save
+│   │   └── users_database.yml
+│   └── data
+├── get-docker.sh
+├── nginx-proxy-manager
+│   ├── config
+│   ├── data
+│   │   ├── access
+│   │   ├── custom_ssl
+│   │   ├── keys.json
+│   │   ├── letsencrypt-acme-challenge
+│   │   ├── logs
+│   │   │   ├── fallback_access.log
+│   │   │   └── fallback_error.log
+│   │   └── nginx
+│   │       ├── dead_host
+│   │       ├── default_host
+│   │       ├── default_www
+│   │       ├── proxy_host
+│   │       ├── redirection_host
+│   │       ├── stream
+│   │       └── temp
+│   ├── letsencrypt
+│   │   └── renewal-hooks
+│   │       ├── deploy
+│   │       ├── post
+│   │       └── pre
+│   ├── mysql
+│   │   ├── aria_log.00000001
+│   │   ├── aria_log_control
+│   │   ├── ef928b2db063.pid
+│   │   ├── multi-master.info
+│   │   ├── mysql [error opening dir]
+│   │   ├── npm [error opening dir]
+│   │   └── performance_schema [error opening dir]
+│   └── nginx-proxy-config.json
+└── portainer-agent-stack.yml
+
+27 directories, 13 files
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
+pi@Raspi-1:~ $
 
 
 
-
+############ Konsole Ende ############ 
 

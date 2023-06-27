@@ -86,6 +86,8 @@ Hier ist der aktualisierte Portainer-Stack, der nun das
 gleiche Netzwerk ("mynetwork") wie der Nginx Proxy Manager und Authelia verwendet:
 
 
+Portainer Stack 2 =  Wichtig ! 
+
 ```
 
 version: '3.9'
@@ -163,6 +165,8 @@ Aber beachten Sie, dass dabei alle laufenden Dienste des Stacks gestoppt werden.
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
 
+
+Portainer Stack 1 =  Wichtig ! 
 
 ## Backup Portainer 
 
